@@ -1,0 +1,22 @@
+name: Build Windows EXE
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore windows/DyslexiaAssist.Windows.csproj
+      - name: Publish EXE
+        run: dotnet publish windows/DyslexiaAssist.Windows.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
+      - name: Upload Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: DyslexiaAssist-Windows
+          path: publish/DyslexiaAssist.exe
